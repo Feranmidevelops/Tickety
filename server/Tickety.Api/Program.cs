@@ -19,9 +19,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.ConfigureHttpJsonOptions(o =>
     o.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
-// —— Persistence ——
+// —— Persistence (PostgreSQL / Supabase) ——
+// Treat DateTime as timestamp-without-tz (matches our UTC-everywhere model and the prior SQL Server
+// behaviour), avoiding Npgsql's strict Kind=Utc enforcement on writes.
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Services.AddDbContext<AppDbContext>(o =>
-    o.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+    o.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
 // —— Identity ——
 builder.Services
