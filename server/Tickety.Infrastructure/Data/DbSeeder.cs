@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Tickety.Domain;
@@ -8,18 +9,21 @@ using Tickety.Infrastructure.Identity;
 namespace Tickety.Infrastructure.Data;
 
 /// <summary>Applies migrations and seeds the role set plus a first Admin so the app is usable
-/// on a clean database. Intended for Development startup.</summary>
+/// on a clean database. Runs on every startup; migrations are idempotent.</summary>
 public static class DbSeeder
 {
+    // Dev-only convenience credentials. In Production the admin comes from
+    // Seed:AdminEmail / Seed:AdminPassword — never these known values.
     public const string DefaultAdminEmail = "admin@tickety.local";
     public const string DefaultAdminPassword = "Admin!23456";
 
-    public static async Task SeedAsync(IServiceProvider services)
+    public static async Task SeedAsync(IServiceProvider services, bool isDevelopment)
     {
         using var scope = services.CreateScope();
         var sp = scope.ServiceProvider;
 
         var db = sp.GetRequiredService<AppDbContext>();
+        var config = sp.GetRequiredService<IConfiguration>();
         var logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(DbSeeder));
         var roleManager = sp.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = sp.GetRequiredService<UserManager<ApplicationUser>>();
@@ -32,21 +36,41 @@ public static class DbSeeder
                 await roleManager.CreateAsync(new IdentityRole(role));
         }
 
-        if (await userManager.FindByEmailAsync(DefaultAdminEmail) is null)
+        // Resolve admin credentials: configured values win; dev falls back to the known defaults;
+        // production with nothing configured seeds no admin (so a public deploy has no default login).
+        var adminEmail = config["Seed:AdminEmail"];
+        var adminPassword = config["Seed:AdminPassword"];
+        if (string.IsNullOrWhiteSpace(adminEmail) || string.IsNullOrWhiteSpace(adminPassword))
+        {
+            if (isDevelopment)
+            {
+                adminEmail = DefaultAdminEmail;
+                adminPassword = DefaultAdminPassword;
+            }
+            else
+            {
+                logger.LogWarning(
+                    "No Seed:AdminEmail/Seed:AdminPassword configured — skipping admin seed. " +
+                    "Set them as environment variables to create the first admin.");
+                return;
+            }
+        }
+
+        if (await userManager.FindByEmailAsync(adminEmail) is null)
         {
             var admin = new ApplicationUser
             {
-                UserName = DefaultAdminEmail,
-                Email = DefaultAdminEmail,
+                UserName = adminEmail,
+                Email = adminEmail,
                 EmailConfirmed = true,
                 DisplayName = "Tickety Admin",
                 IsActive = true
             };
-            var result = await userManager.CreateAsync(admin, DefaultAdminPassword);
+            var result = await userManager.CreateAsync(admin, adminPassword);
             if (result.Succeeded)
             {
                 await userManager.AddToRoleAsync(admin, Roles.Admin);
-                logger.LogInformation("Seeded default admin {Email}", DefaultAdminEmail);
+                logger.LogInformation("Seeded admin {Email}", adminEmail);
             }
             else
             {

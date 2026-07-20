@@ -99,10 +99,10 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
-{
     app.MapOpenApi();
-    await DbSeeder.SeedAsync(app.Services);
-}
+
+// Apply migrations and seed roles/admin on startup, in every environment.
+await DbSeeder.SeedAsync(app.Services, app.Environment.IsDevelopment());
 
 app.UseCors();
 app.UseAuthentication();
@@ -115,5 +115,8 @@ app.MapAgentEndpoints();
 
 app.MapHub<QueueHub>("/hubs/queue");
 app.MapHub<TicketHub>("/hubs/ticket");
+
+// Lightweight liveness probe (Swagger is Development-only) for platform health checks.
+app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
 app.Run();
