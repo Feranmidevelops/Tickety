@@ -1,0 +1,33 @@
+# .NET
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+.vs/
+
+# EF / local db
+*.mdf
+*.ldf
+
+# Node / Vite
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Editors / OS
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local tool settings
+.claude/settings.local.json
+.vs/
+
+# Logs
+*.log

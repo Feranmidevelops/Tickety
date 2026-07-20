@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Tickety.Api/Tickety.Api.csproj" />
+  <Project Path="Tickety.Domain/Tickety.Domain.csproj" />
+  <Project Path="Tickety.Infrastructure/Tickety.Infrastructure.csproj" />
+  <Project Path="Tickety.Tests/Tickety.Tests.csproj" />
+</Solution>

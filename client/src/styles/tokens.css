@@ -1,0 +1,124 @@
+/* Tickety design tokens — Linear/Vercel-inspired minimalist neutral.
+   Components consume only these semantic tokens (no raw hex). */
+:root {
+  /* Background layers */
+  --bg-app: #fbfbfc;
+  --bg-surface: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-inset: #f4f5f7;
+  --bg-hover: #f4f5f7;
+  --bg-active: #eceef1;
+
+  /* Borders (hairlines) */
+  --border-subtle: #ededf0;
+  --border-default: #e2e3e8;
+  --border-strong: #d4d6dc;
+
+  /* Text */
+  --text-primary: #16171a;
+  --text-secondary: #56585f;
+  --text-muted: #8a8f98;
+  --text-disabled: #b0b3ba;
+
+  /* Accent (indigo) */
+  --accent: #5e6ad2;
+  --accent-hover: #5058c4;
+  --accent-active: #464dad;
+  --accent-fg: #ffffff;
+  --accent-text: #4f59c4;
+  --accent-subtle: #eef0fb;
+  --accent-border: #cdd2f4;
+  --focus-ring: rgba(94, 106, 210, 0.45);
+
+  /* Status colors: text / bg / dot */
+  --st-new-text: #1d4ed8;      --st-new-bg: #eaf0fd;      --st-new-dot: #3b82f6;
+  --st-progress-text: #b45309; --st-progress-bg: #fdf3e3; --st-progress-dot: #f59e0b;
+  --st-resolved-text: #15803d; --st-resolved-bg: #e9f6ed; --st-resolved-dot: #22c55e;
+  --st-closed-text: #56585f;   --st-closed-bg: #f1f2f4;   --st-closed-dot: #9ca3af;
+  --st-reopened-text: #be123c; --st-reopened-bg: #fdeaef; --st-reopened-dot: #f43f5e;
+
+  /* Priority */
+  --pri-low: #8a8f98;
+  --pri-medium: #d99e2b;
+  --pri-high: #e8833a;
+  --pri-urgent: #e5484d;
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+
+  /* Spacing (4px grid) */
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 20px;
+  --space-6: 24px; --space-8: 32px; --space-10: 40px; --space-12: 48px; --space-16: 64px;
+
+  /* Radius */
+  --radius-sm: 4px; --radius-md: 6px; --radius-lg: 8px; --radius-xl: 12px; --radius-pill: 9999px;
+
+  /* Elevation */
+  --shadow-xs: 0 1px 2px rgba(16, 17, 20, 0.04);
+  --shadow-sm: 0 1px 2px rgba(16, 17, 20, 0.05), 0 1px 1px rgba(16, 17, 20, 0.03);
+  --shadow-md: 0 4px 8px -2px rgba(16, 17, 20, 0.08), 0 2px 4px -2px rgba(16, 17, 20, 0.05);
+  --shadow-lg: 0 12px 32px -8px rgba(16, 17, 20, 0.14), 0 4px 10px -6px rgba(16, 17, 20, 0.08);
+
+  /* Motion */
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --dur-fast: 100ms; --dur-base: 150ms; --dur-slow: 200ms;
+}
+
+:root[data-theme="dark"] {
+  --bg-app: #0c0d0f;
+  --bg-surface: #141517;
+  --bg-elevated: #1b1c1f;
+  --bg-inset: #1a1b1e;
+  --bg-hover: #1e2023;
+  --bg-active: #26282c;
+
+  --border-subtle: #202225;
+  --border-default: #2a2c30;
+  --border-strong: #3a3d42;
+
+  --text-primary: #f7f8f8;
+  --text-secondary: #b4b8c0;
+  --text-muted: #8a8f98;
+  --text-disabled: #5c5f66;
+
+  --accent: #6872e5;
+  --accent-hover: #7a83ee;
+  --accent-active: #5058c4;
+  --accent-fg: #ffffff;
+  --accent-text: #a5adf0;
+  --accent-subtle: rgba(104, 114, 229, 0.16);
+  --accent-border: rgba(104, 114, 229, 0.35);
+  --focus-ring: rgba(104, 114, 229, 0.55);
+
+  --st-new-text: #93b4fb;      --st-new-bg: rgba(59, 130, 246, 0.16);
+  --st-progress-text: #f0b866; --st-progress-bg: rgba(245, 158, 11, 0.16);
+  --st-resolved-text: #6ede93; --st-resolved-bg: rgba(34, 197, 94, 0.16);
+  --st-closed-text: #a0a4ac;   --st-closed-bg: rgba(156, 163, 175, 0.14);
+  --st-reopened-text: #f68ba1; --st-reopened-bg: rgba(244, 63, 94, 0.16);
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 16px 40px -8px rgba(0, 0, 0, 0.7);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-app: #0c0d0f; --bg-surface: #141517; --bg-elevated: #1b1c1f;
+    --bg-inset: #1a1b1e; --bg-hover: #1e2023; --bg-active: #26282c;
+    --border-subtle: #202225; --border-default: #2a2c30; --border-strong: #3a3d42;
+    --text-primary: #f7f8f8; --text-secondary: #b4b8c0; --text-muted: #8a8f98; --text-disabled: #5c5f66;
+    --accent: #6872e5; --accent-hover: #7a83ee; --accent-active: #5058c4;
+    --accent-text: #a5adf0; --accent-subtle: rgba(104, 114, 229, 0.16);
+    --accent-border: rgba(104, 114, 229, 0.35); --focus-ring: rgba(104, 114, 229, 0.55);
+    --st-new-text: #93b4fb; --st-new-bg: rgba(59, 130, 246, 0.16);
+    --st-progress-text: #f0b866; --st-progress-bg: rgba(245, 158, 11, 0.16);
+    --st-resolved-text: #6ede93; --st-resolved-bg: rgba(34, 197, 94, 0.16);
+    --st-closed-text: #a0a4ac; --st-closed-bg: rgba(156, 163, 175, 0.14);
+    --st-reopened-text: #f68ba1; --st-reopened-bg: rgba(244, 63, 94, 0.16);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.55);
+    --shadow-lg: 0 16px 40px -8px rgba(0, 0, 0, 0.7);
+  }
+}

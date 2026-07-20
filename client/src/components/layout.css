@@ -1,0 +1,53 @@
+.layout { display: flex; height: 100%; }
+
+.sidebar {
+  width: 240px; flex-shrink: 0; height: 100%;
+  background: var(--bg-surface); border-right: 1px solid var(--border-subtle);
+  display: flex; flex-direction: column; padding: var(--space-4);
+}
+.sidebar__brand {
+  display: flex; align-items: center; gap: var(--space-2);
+  font-size: 15px; font-weight: 600; letter-spacing: -0.01em;
+  padding: var(--space-2) var(--space-2) var(--space-5);
+}
+.sidebar__logo { color: var(--accent); }
+
+.sidebar__nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.navitem {
+  display: flex; align-items: center; height: 32px; padding: 0 var(--space-3);
+  border-radius: var(--radius-md); font-size: 13px; font-weight: 500;
+  color: var(--text-secondary); text-decoration: none;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.navitem:hover { background: var(--bg-hover); color: var(--text-primary); text-decoration: none; }
+.navitem.active { background: var(--accent-subtle); color: var(--accent-text); }
+
+.sidebar__footer { border-top: 1px solid var(--border-subtle); padding-top: var(--space-3); }
+.sidebar__user { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2); }
+.sidebar__avatar {
+  width: 28px; height: 28px; border-radius: var(--radius-pill); flex-shrink: 0;
+  background: var(--accent-subtle); color: var(--accent-text);
+  display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600;
+}
+.sidebar__userinfo { overflow: hidden; }
+.sidebar__name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar__actions { display: flex; align-items: center; justify-content: space-between; }
+
+.main { flex: 1; height: 100%; overflow-y: auto; background: var(--bg-app); }
+
+/* Sub-header shared by pages */
+.subheader {
+  position: sticky; top: 0; z-index: 10;
+  height: 56px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 var(--space-6); background: var(--bg-app);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.subheader__title { display: flex; align-items: center; gap: var(--space-3); }
+.page { padding: var(--space-6); }
+.page--narrow { max-width: 640px; }
+.page--centered { max-width: 1200px; margin: 0 auto; }
+
+@media (max-width: 640px) {
+  .sidebar { width: 56px; padding: var(--space-2); }
+  .sidebar__brand span:last-child, .navitem, .sidebar__userinfo { font-size: 0; }
+}
