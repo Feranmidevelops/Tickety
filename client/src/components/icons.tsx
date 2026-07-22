@@ -43,3 +43,12 @@ export const IconSun = (p: SVGProps<SVGSVGElement>) => (
 export const IconMoon = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
 );
+export const IconCheck = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><path d="M20 6 9 17l-5-5"/></svg>
+);
+export const IconArchive = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4"/></svg>
+);
+export const IconEye = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+);
