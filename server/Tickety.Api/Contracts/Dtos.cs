@@ -57,3 +57,5 @@ public record TicketDetailDto(
     IReadOnlyList<TicketEventDto> Events);
 
 public record AgentDto(string Id, string DisplayName, string Email);
+
+public record UserRow(string Id, string DisplayName, string Email, string Role, bool IsActive, string Presence);

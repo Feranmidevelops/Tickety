@@ -93,6 +93,7 @@ builder.Services.AddSignalR().AddJsonProtocol(o =>
     o.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddSingleton<IPresenceTracker, PresenceTracker>();
 builder.Services.AddEmailSender(builder.Configuration);
 builder.Services.AddOpenApi();
 
@@ -112,9 +113,11 @@ app.MapAuthEndpoints();
 app.MapInviteEndpoints();
 app.MapTicketEndpoints();
 app.MapAgentEndpoints();
+app.MapUsersEndpoints();
 
 app.MapHub<QueueHub>("/hubs/queue");
 app.MapHub<TicketHub>("/hubs/ticket");
+app.MapHub<PresenceHub>("/hubs/presence");
 
 // Lightweight liveness probe (Swagger is Development-only) for platform health checks.
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
