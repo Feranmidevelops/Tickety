@@ -6,10 +6,5 @@ export function StatusBadge({ status }: { status: TicketStatus }) {
 }
 
 export function PriorityTag({ priority }: { priority: TicketPriority }) {
-  return (
-    <span className={`pri pri--${priority}`}>
-      <span className="pri__dot" />
-      {priority}
-    </span>
-  );
+  return <span className={`pri pri--${priority}`}>{priority}</span>;
 }
