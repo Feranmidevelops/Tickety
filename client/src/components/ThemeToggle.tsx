@@ -4,9 +4,9 @@ type Theme = 'light' | 'dark';
 const KEY = 'tickety.theme';
 
 export function ThemeToggle() {
+  // Default to light (matches the design); dark is opt-in and remembered once chosen.
   const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(KEY) as Theme) ||
-      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    () => (localStorage.getItem(KEY) as Theme) || 'light'
   );
 
   useEffect(() => {

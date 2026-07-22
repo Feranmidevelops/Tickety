@@ -134,28 +134,5 @@
   --shadow-lg: 0 16px 40px -12px rgba(0, 0, 0, 0.7);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg-app: #0f1220; --bg-surface: #171a2b; --bg-elevated: #1d2136;
-    --bg-inset: #1a1e30; --bg-hover: #1e2338; --bg-active: #242a44;
-    --border-subtle: #232840; --border-default: #2b3150; --border-strong: #3a4064;
-    --text-primary: #f2f4fb; --text-secondary: #b3bad2; --text-muted: #7c85a3; --text-disabled: #5a6180;
-    --accent: #6872e5; --accent-hover: #7a83ee; --accent-active: #5058c4;
-    --accent-text: #a5adf0; --accent-subtle: rgba(104, 114, 229, 0.16);
-    --accent-border: rgba(104, 114, 229, 0.35); --focus-ring: rgba(104, 114, 229, 0.55);
-    --sidebar-bg: #14172a;
-    --st-new-text: #7fa9fb; --st-progress-text: #f0b866; --st-resolved-text: #5fd39a;
-    --st-closed-text: #9aa4b6; --st-reopened-text: #f68ba1;
-    --pri-low-text: #4fd6c6; --pri-low-bg: rgba(18, 169, 154, 0.18);
-    --pri-medium-text: #f0c069; --pri-medium-bg: rgba(240, 169, 43, 0.16);
-    --pri-high-text: #f68ba1; --pri-high-bg: rgba(225, 77, 120, 0.18);
-    --pri-urgent-text: #f2767a; --pri-urgent-bg: rgba(229, 72, 77, 0.18);
-    --stat-blue-bg: rgba(59, 130, 246, 0.16); --stat-blue-fg: #7fa9fb;
-    --stat-amber-bg: rgba(240, 169, 43, 0.16); --stat-amber-fg: #f0c069;
-    --stat-green-bg: rgba(47, 191, 127, 0.16); --stat-green-fg: #5fd39a;
-    --stat-red-bg: rgba(240, 100, 108, 0.16); --stat-red-fg: #f2767a;
-    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 12px 30px -16px rgba(0, 0, 0, 0.6);
-    --shadow-md: 0 6px 16px -4px rgba(0, 0, 0, 0.5);
-    --shadow-lg: 0 16px 40px -12px rgba(0, 0, 0, 0.7);
-  }
-}
+/* Dark theme is opt-in via the toggle (data-theme="dark") only — the app defaults to
+   the light look and does NOT auto-follow the OS colour scheme. */
