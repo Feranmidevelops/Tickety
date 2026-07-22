@@ -20,7 +20,8 @@ public static class AuthEndpoints
         {
             var user = await users.FindByEmailAsync(req.Email);
             if (user is null || !user.IsActive || !await users.CheckPasswordAsync(user, req.Password))
-                return Results.Unauthorized();
+                return Results.Json(new { error = "Invalid email or password." },
+                    statusCode: StatusCodes.Status401Unauthorized);
 
             var role = (await users.GetRolesAsync(user)).FirstOrDefault() ?? Roles.Requester;
             var (token, expires) = tokens.Create(user, role);
