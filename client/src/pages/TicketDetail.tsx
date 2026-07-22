@@ -6,6 +6,7 @@ import { useAuth } from '../auth/AuthContext';
 import { useToast } from '../components/Toast';
 import { useTicketHub } from '../realtime/signalr';
 import { StatusBadge, PriorityTag } from '../components/Badge';
+import { AvatarLabel } from '../components/Avatar';
 import { Timeline } from '../components/Timeline';
 import { AssignControl } from '../components/AssignControl';
 import { actionLabel, categoryLabel, fullDate, nextStatuses, statusLabel } from '../lib/format';
@@ -73,12 +74,9 @@ export function TicketDetail() {
   const transitions = isAgent && ticket.status !== 'New' ? nextStatuses(ticket.status) : [];
 
   return (
-    <>
-      <div className="subheader">
-        <div className="subheader__title">
-          <button className="btn btn--ghost btn--sm" onClick={() => navigate(-1)}>← Back</button>
-          <span className="t-caption t-muted">#{ticket.id}</span>
-        </div>
+    <div className="page page--centered td">
+      <div className="td__bar">
+        <button className="btn btn--ghost btn--sm" onClick={() => navigate(-1)}>← Back</button>
         {isAgent && (
           <div className="td__actions">
             {canAccept && (
@@ -87,7 +85,7 @@ export function TicketDetail() {
             {transitions.map((s) => (
               <button
                 key={s}
-                className={`btn ${actionLabel(ticket.status, s) === 'Reopen' ? 'btn--secondary' : s === 'Closed' ? 'btn--secondary' : 'btn--primary'}`}
+                className={`btn ${actionLabel(ticket.status, s) === 'Reopen' || s === 'Closed' ? 'btn--secondary' : 'btn--primary'}`}
                 onClick={() => changeStatus(s)}
                 disabled={busy}
               >
@@ -98,39 +96,43 @@ export function TicketDetail() {
         )}
       </div>
 
-      <div className="page page--centered td">
+      <div className="td__grid">
         <div className="td__main">
-          <div className="td__header">
+          <div className="panel td__headcard">
             <div className="td__badges">
+              <span className="t-caption t-muted">#{ticket.id}</span>
               <StatusBadge status={ticket.status} />
               <PriorityTag priority={ticket.priority} />
-              <span className="td__cat t-caption t-muted">{categoryLabel[ticket.category]}</span>
+              <span className="td__cat">{categoryLabel[ticket.category]}</span>
             </div>
             <h1 className="t-title td__title">{ticket.title}</h1>
+            <p className="td__description">{ticket.description}</p>
           </div>
 
-          <div className="panel td__description">{ticket.description}</div>
-
-          <h2 className="t-subhead td__timeline-title">Activity</h2>
-          <Timeline events={ticket.events} />
+          <div className="panel">
+            <h2 className="t-subhead td__timeline-title">Activity</h2>
+            <Timeline events={ticket.events} />
+          </div>
         </div>
 
-        <aside className="td__rail">
+        <aside className="panel td__rail">
           <RailField label="Status"><StatusBadge status={ticket.status} /></RailField>
           <RailField label="Priority"><PriorityTag priority={ticket.priority} /></RailField>
           <RailField label="Category">{categoryLabel[ticket.category]}</RailField>
-          <RailField label="Requester">{ticket.requesterName}</RailField>
+          <RailField label="Requester"><AvatarLabel name={ticket.requesterName} size={24} /></RailField>
           <RailField label="Assignee">
             {isAgent
               ? <AssignControl ticketId={ticket.id} currentAgentId={ticket.assignedAgentId}
                   currentAgentName={ticket.assignedAgentName} />
-              : (ticket.assignedAgentName ?? <span className="t-muted">Unassigned</span>)}
+              : (ticket.assignedAgentName
+                  ? <AvatarLabel name={ticket.assignedAgentName} size={24} />
+                  : <span className="t-muted">Unassigned</span>)}
           </RailField>
           <RailField label="Created">{fullDate(ticket.createdAtUtc)}</RailField>
           <RailField label="Last updated">{fullDate(ticket.updatedAtUtc)}</RailField>
         </aside>
       </div>
-    </>
+    </div>
   );
 }
 

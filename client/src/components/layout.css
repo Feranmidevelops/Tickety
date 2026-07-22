@@ -75,10 +75,6 @@
 
 /* ——— Main content ——— */
 .main { flex: 1; overflow-y: auto; background: var(--bg-app); }
-
-/* Interim in-page action bar (ticket detail) */
-.subheader { display: flex; align-items: center; justify-content: space-between; padding: var(--space-5) var(--space-6) 0; }
-.subheader__title { display: flex; align-items: center; gap: var(--space-3); }
 .page { padding: var(--space-6); }
 .page--narrow { max-width: 640px; }
 .page--centered { max-width: 1200px; margin: 0 auto; }
