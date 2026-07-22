@@ -38,10 +38,6 @@ export function AdminInvites() {
 
   return (
     <>
-      <div className="subheader">
-        <div className="subheader__title"><span className="t-title">Invite Users</span></div>
-      </div>
-
       <div className="page page--narrow">
         <form className="panel" onSubmit={submit}>
           {error && <div className="authcard__error">{error}</div>}

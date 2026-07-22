@@ -41,10 +41,6 @@ export function NewTicket() {
 
   return (
     <>
-      <div className="subheader">
-        <div className="subheader__title"><span className="t-title">New Ticket</span></div>
-      </div>
-
       <div className="page page--narrow">
         <form className="panel" onSubmit={submit}>
           {error && <div className="authcard__error">{error}</div>}

@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import { useAuth } from '../auth/AuthContext';
@@ -14,7 +13,6 @@ export function Queue() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const toast = useToast();
-  const navigate = useNavigate();
   const [filter, setFilter] = useState<Filter>('all');
 
   const { data: tickets = [], isLoading } = useQuery({
@@ -45,14 +43,6 @@ export function Queue() {
 
   return (
     <>
-      <div className="subheader">
-        <div className="subheader__title">
-          <span className="t-title">Queue</span>
-          <span className="t-caption t-muted">Live</span>
-        </div>
-        <button className="btn btn--primary" onClick={() => navigate('/new')}>New ticket</button>
-      </div>
-
       <div className="page">
         <div className="filterbar">
           {(['all', 'unassigned', 'mine'] as Filter[]).map((f) => (

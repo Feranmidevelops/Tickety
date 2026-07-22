@@ -13,11 +13,6 @@ export function MyTickets() {
 
   return (
     <>
-      <div className="subheader">
-        <div className="subheader__title"><span className="t-title">My Tickets</span></div>
-        <button className="btn btn--primary" onClick={() => navigate('/new')}>New ticket</button>
-      </div>
-
       <div className="page">
         {isLoading ? (
           <div className="page"><span className="spinner" /></div>
