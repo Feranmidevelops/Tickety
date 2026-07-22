@@ -15,6 +15,12 @@ using Tickety.Infrastructure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// —— Bind to the platform-provided port (Render/Koyeb/etc. inject PORT). Locally, PORT is
+// unset so the Dockerfile's ASPNETCORE_URLS / launch settings apply. ——
+var port = Environment.GetEnvironmentVariable("PORT");
+if (!string.IsNullOrWhiteSpace(port))
+    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 // —— JSON: serialize enums as strings so the TS client gets "InProgress", not 1 ——
 builder.Services.ConfigureHttpJsonOptions(o =>
     o.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
