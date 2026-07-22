@@ -9,6 +9,7 @@ import { MyTickets } from './pages/MyTickets';
 import { NewTicket } from './pages/NewTicket';
 import { TicketDetail } from './pages/TicketDetail';
 import { AdminInvites } from './pages/AdminInvites';
+import { Users } from './pages/Users';
 
 /** Sends the signed-in user to the landing page that matches their role. */
 function RoleHome() {
@@ -32,6 +33,8 @@ export default function App() {
           <Route path="my-tickets" element={<MyTickets />} />
           <Route path="new" element={<NewTicket />} />
           <Route path="tickets/:id" element={<TicketDetail />} />
+          <Route path="users" element={
+            <RequireAuth roles={['Admin']}><Users /></RequireAuth>} />
           <Route path="admin/invites" element={
             <RequireAuth roles={['Admin']}><AdminInvites /></RequireAuth>} />
         </Route>

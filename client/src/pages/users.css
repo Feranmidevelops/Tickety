@@ -1,0 +1,21 @@
+.usertable__head, .usertable__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 160px 160px;
+  align-items: center; gap: var(--space-3);
+  padding: 0 var(--space-5);
+}
+.usertable__head {
+  height: 48px; border-bottom: 1px solid var(--border-subtle);
+  font-size: 12px; font-weight: 600; color: var(--text-muted);
+}
+.usertable__row { min-height: 64px; border-bottom: 1px solid var(--border-subtle); font-size: 14px; }
+.usertable__row:last-child { border-bottom: none; }
+
+.usertable__user { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
+.usertable__id { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.usertable__name { font-weight: 500; color: var(--text-primary); display: flex; align-items: center; gap: var(--space-2); }
+.usertable__email { font-size: 13px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.usertable__inactive {
+  font-size: 11px; font-weight: 600; color: var(--st-closed-text);
+  background: var(--bg-inset); padding: 1px 6px; border-radius: var(--radius-pill);
+}

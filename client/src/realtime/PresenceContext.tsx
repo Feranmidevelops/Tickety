@@ -2,8 +2,7 @@ import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { API_URL, TOKEN_KEY } from '../lib/config';
 import { useAuth } from '../auth/AuthContext';
-
-export type PresenceStatus = 'Online' | 'Away' | 'Offline';
+import type { PresenceStatus } from '../lib/types';
 
 interface PresenceApi {
   /** Live status by userId. Only populated for admins/agents (who receive broadcasts). */

@@ -1,5 +1,8 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../auth/AuthContext';
+import { api } from '../lib/api';
+import type { UserRow } from '../lib/types';
 import { Avatar } from './Avatar';
 import { ThemeToggle } from './ThemeToggle';
 import {
@@ -12,6 +15,7 @@ function pageTitle(pathname: string): string {
   if (pathname.startsWith('/my-tickets')) return 'My Tickets';
   if (pathname.startsWith('/new')) return 'New Ticket';
   if (pathname.startsWith('/tickets/')) return 'Ticket';
+  if (pathname.startsWith('/users')) return 'Users';
   if (pathname.startsWith('/admin/invites')) return 'Invite Users';
   return 'Tickety';
 }
@@ -19,6 +23,16 @@ function pageTitle(pathname: string): string {
 export function Layout() {
   const { user, logout, hasRole } = useAuth();
   const location = useLocation();
+  const isAdmin = hasRole('Admin');
+
+  // Live user count for the sidebar badge (admin only; shares cache with the Users page).
+  const { data: users } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => api.get<UserRow[]>('/api/users'),
+    enabled: isAdmin,
+    refetchInterval: 30_000,
+  });
+
   if (!user) return null;
   const title = pageTitle(location.pathname);
 
@@ -37,8 +51,14 @@ export function Layout() {
             <NavLink to="/my-tickets" className="navitem"><IconTicket /> <span>My Tickets</span></NavLink>
           )}
           <NavLink to="/new" className="navitem"><IconPlus /> <span>New Ticket</span></NavLink>
-          {hasRole('Admin') && (
-            <NavLink to="/admin/invites" className="navitem"><IconUsers /> <span>Invite Users</span></NavLink>
+          {isAdmin && (
+            <NavLink to="/users" className="navitem">
+              <IconUsers /> <span>Users</span>
+              {users && <span className="navitem__count">{users.length}</span>}
+            </NavLink>
+          )}
+          {isAdmin && (
+            <NavLink to="/admin/invites" className="navitem"><IconPlus /> <span>Invite Users</span></NavLink>
           )}
         </nav>
 

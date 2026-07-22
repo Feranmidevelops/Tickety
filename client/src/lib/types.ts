@@ -46,6 +46,16 @@ export interface CreateTicketRequest {
   priority: TicketPriority;
 }
 
+export type PresenceStatus = 'Online' | 'Away' | 'Offline';
+export interface UserRow {
+  id: string;
+  displayName: string;
+  email: string;
+  role: Role;
+  isActive: boolean;
+  presence: PresenceStatus;
+}
+
 export interface InviteInfo { email: string; role: Role; }
 export interface InviteCreated {
   token: string; acceptUrl: string; email: string; role: Role; expiresAtUtc: string; emailed: boolean;

@@ -1,0 +1,18 @@
+.presence { display: inline-flex; align-items: center; gap: var(--space-2); font-size: 13px; font-weight: 500; }
+.presence__dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.presence--Online { color: var(--st-resolved-text); }
+.presence--Online .presence__dot { background: var(--st-resolved-dot); box-shadow: 0 0 0 3px color-mix(in srgb, var(--st-resolved-dot) 22%, transparent); }
+.presence--Away { color: var(--st-progress-text); }
+.presence--Away .presence__dot { background: var(--st-progress-dot); box-shadow: 0 0 0 3px color-mix(in srgb, var(--st-progress-dot) 22%, transparent); }
+.presence--Offline { color: var(--text-muted); }
+.presence--Offline .presence__dot { background: var(--st-closed-dot); }
+
+/* Role pill */
+.rolebadge {
+  display: inline-flex; align-items: center; height: 22px; padding: 0 var(--space-3);
+  border-radius: var(--radius-pill); font-size: 12px; font-weight: 600;
+  background: var(--bg-inset); color: var(--text-secondary);
+}
+.rolebadge--Admin { background: var(--accent-subtle); color: var(--accent-text); }
+.rolebadge--Agent { background: var(--stat-amber-bg); color: var(--pri-medium-text); }
+.rolebadge--Requester { background: var(--stat-blue-bg); color: var(--st-new-text); }
