@@ -36,8 +36,13 @@ builder.Services.AddDbContext<AppDbContext>(o =>
 builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>(o =>
     {
+        // Password policy — mirrored exactly by the client-side checklist on the accept-invite page,
+        // so what the user sees ticking green is precisely what the server enforces.
         o.Password.RequiredLength = 8;
-        o.Password.RequireNonAlphanumeric = false;
+        o.Password.RequireUppercase = true;        // one capital letter
+        o.Password.RequireDigit = true;            // one number
+        o.Password.RequireNonAlphanumeric = true;  // one special character
+        o.Password.RequireLowercase = false;       // not required (kept in step with the UI checklist)
         o.User.RequireUniqueEmail = true;
     })
     .AddEntityFrameworkStores<AppDbContext>()

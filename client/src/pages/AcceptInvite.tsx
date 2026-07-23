@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../lib/api';
 import { PasswordInput } from '../components/PasswordInput';
+import { PasswordChecklist, checkPassword, passwordValid } from '../components/PasswordChecklist';
 import type { InviteInfo } from '../lib/types';
 import './auth.css';
 
@@ -73,9 +74,11 @@ export function AcceptInvite() {
               <label htmlFor="pw">Password</label>
               <PasswordInput id="pw" autoComplete="new-password"
                 value={password} onChange={(e) => setPassword(e.target.value)}
-                placeholder="At least 8 characters" required />
+                placeholder="Create a password" required />
+              <PasswordChecklist value={password} />
             </div>
-            <button className="btn btn--primary btn--block" disabled={busy}>
+            <button className="btn btn--primary btn--block"
+              disabled={busy || !displayName.trim() || !passwordValid(checkPassword(password))}>
               {busy ? <span className="spinner" /> : 'Create account'}
             </button>
           </form>
