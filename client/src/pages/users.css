@@ -1,9 +1,18 @@
 .usertable__head, .usertable__row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 160px 160px;
+  grid-template-columns: minmax(0, 1fr) 150px 150px 80px;
   align-items: center; gap: var(--space-3);
   padding: 0 var(--space-5);
 }
+.usertable__center { display: flex; justify-content: center; }
+.usertable__del {
+  width: 32px; height: 32px; border: none; background: transparent; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--text-muted); border-radius: var(--radius-md);
+  transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.usertable__del:hover { color: var(--pri-urgent-text); background: var(--pri-urgent-bg); }
+.usertable__you { font-size: 12px; color: var(--text-muted); }
 .usertable__head {
   height: 48px; border-bottom: 1px solid var(--border-subtle);
   font-size: 12px; font-weight: 600; color: var(--text-muted);

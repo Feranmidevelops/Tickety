@@ -1,21 +1,37 @@
 import { useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
+import { useAuth } from '../auth/AuthContext';
+import { useToast } from '../components/Toast';
 import { usePresence } from '../realtime/PresenceContext';
 import { Avatar } from '../components/Avatar';
 import { PresenceDot } from '../components/Presence';
 import { StatCard, StatRow } from '../components/StatCard';
-import { IconUsers, IconCheck, IconQueue, IconTicket } from '../components/icons';
+import { IconUsers, IconCheck, IconQueue, IconTicket, IconTrash } from '../components/icons';
 import type { PresenceStatus, UserRow } from '../lib/types';
 import './users.css';
 
 export function Users() {
   const { presence } = usePresence();
+  const { user: me } = useAuth();
+  const qc = useQueryClient();
+  const toast = useToast();
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['users'],
     queryFn: () => api.get<UserRow[]>('/api/users'),
     refetchInterval: 30_000,
   });
+
+  async function remove(u: UserRow) {
+    if (!window.confirm(`Delete ${u.displayName} (${u.email})? This can't be undone.`)) return;
+    try {
+      await api.del(`/api/users/${u.id}`);
+      toast.show(`${u.displayName} deleted`, 'success');
+      qc.invalidateQueries({ queryKey: ['users'] });
+    } catch (e) {
+      toast.show((e as Error).message, 'error');
+    }
+  }
 
   // Overlay live presence on top of the status the API returned at load time.
   const rows = useMemo(
@@ -47,6 +63,7 @@ export function Users() {
             <span>User</span>
             <span>Role</span>
             <span>Status</span>
+            <span className="usertable__center">Action</span>
           </div>
           {rows.map((u) => (
             <div key={u.id} className="usertable__row">
@@ -61,6 +78,16 @@ export function Users() {
               </span>
               <span><span className={`rolebadge rolebadge--${u.role}`}>{u.role}</span></span>
               <PresenceDot status={u.status} />
+              <span className="usertable__center">
+                {u.id === me?.id ? (
+                  <span className="usertable__you">You</span>
+                ) : (
+                  <button className="usertable__del" onClick={() => remove(u)}
+                    aria-label={`Delete ${u.displayName}`} title="Delete user">
+                    <IconTrash width={16} height={16} />
+                  </button>
+                )}
+              </span>
             </div>
           ))}
         </div>
