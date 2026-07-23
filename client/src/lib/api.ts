@@ -12,17 +12,34 @@ function token(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
 
+/** Human-friendly fallback when the server didn't send its own error message. */
+function fallbackMessage(status: number): string {
+  if (status === 0) return "Can't reach the server — it may be waking up. Please try again in a few seconds.";
+  if (status === 401) return 'Your session has expired. Please sign in again.';
+  if (status === 403) return "You don't have permission to do that.";
+  if (status === 404) return "We couldn't find what you were looking for.";
+  if (status === 409) return 'That conflicts with something that already exists.';
+  if (status >= 500) return 'Something went wrong on our end. Please try again in a moment.';
+  return `Request failed (${status}).`;
+}
+
 async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
   const headers: Record<string, string> = {};
   const t = token();
   if (t) headers['Authorization'] = `Bearer ${t}`;
   if (body !== undefined) headers['Content-Type'] = 'application/json';
 
-  const res = await fetch(`${API_URL}${path}`, {
-    method,
-    headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}${path}`, {
+      method,
+      headers,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+  } catch {
+    // Network error / CORS failure / server asleep — fetch rejects with no response.
+    throw new ApiError(0, fallbackMessage(0));
+  }
 
   if (res.status === 204) return undefined as T;
 
@@ -30,10 +47,8 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
   const data = text ? safeParse(text) : undefined;
 
   if (!res.ok) {
-    const message =
-      (data && (data.error || (data.errors && data.errors.join(', ')))) ||
-      (res.status === 401 ? 'Your session has expired. Please sign in again.' : `Request failed (${res.status}).`);
-    throw new ApiError(res.status, message);
+    const serverMessage = data && (data.error || (Array.isArray(data.errors) && data.errors.join(', ')));
+    throw new ApiError(res.status, serverMessage || fallbackMessage(res.status));
   }
   return data as T;
 }
@@ -45,4 +60,5 @@ function safeParse(text: string): any {
 export const api = {
   get: <T>(path: string) => request<T>('GET', path),
   post: <T>(path: string, body?: unknown) => request<T>('POST', path, body ?? {}),
+  del: <T>(path: string) => request<T>('DELETE', path),
 };

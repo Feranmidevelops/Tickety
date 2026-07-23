@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../lib/api';
+import { PasswordInput } from '../components/PasswordInput';
 import type { InviteInfo } from '../lib/types';
 import './auth.css';
 
@@ -70,7 +71,7 @@ export function AcceptInvite() {
             </div>
             <div className="field">
               <label htmlFor="pw">Password</label>
-              <input id="pw" className="input" type="password" autoComplete="new-password"
+              <PasswordInput id="pw" autoComplete="new-password"
                 value={password} onChange={(e) => setPassword(e.target.value)}
                 placeholder="At least 8 characters" required />
             </div>
