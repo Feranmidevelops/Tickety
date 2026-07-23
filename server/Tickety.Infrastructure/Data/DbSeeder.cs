@@ -211,8 +211,9 @@ public static class DbSeeder
     private static async Task SeedDemoDataAsync(
         AppDbContext db, UserManager<ApplicationUser> userManager, ILogger logger)
     {
-        // Only seed the demo workspace on a fresh database — never duplicate on restart.
-        if (await db.Tickets.AnyAsync())
+        // Seed the demo workspace only once, keyed on a demo user existing — so leftover test
+        // tickets already on the database don't suppress it (and restarts never duplicate it).
+        if (await userManager.FindByEmailAsync(DemoAgents[0].Email) is not null)
             return;
 
         var agents = new List<ApplicationUser>();
@@ -230,6 +231,11 @@ public static class DbSeeder
             logger.LogWarning("Skipping ticket seed — one or more demo users could not be created.");
             return;
         }
+
+        // Start the demo queue from a clean slate: drop any leftover test tickets so the workspace
+        // looks professional. Safe because this whole block runs only once (see the guard above).
+        await db.TicketEvents.ExecuteDeleteAsync();
+        await db.Tickets.ExecuteDeleteAsync();
 
         var now = DateTime.UtcNow;
         var seeded = 0;
