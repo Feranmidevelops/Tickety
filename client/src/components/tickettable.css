@@ -59,3 +59,21 @@
   .ttable__row > .avatarlabel,
   .ttable__row > .ttable__date { display: none; }
 }
+
+/* Phones: each row is a tappable card — subject on the left, priority + status stacked right. */
+@media (max-width: 640px) {
+  .ttable__head { display: none; }
+  .ttable__row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-1) var(--space-3);
+    padding: var(--space-4);
+    min-height: 0;
+  }
+  .ttable__id,
+  .ttable__row > .ttable__center,   /* assignee + action menu */
+  .ttable__date { display: none; }
+  .ttable__subject { grid-column: 1; grid-row: 1 / span 2; align-self: center; }
+  .ttable__subjtitle { white-space: normal; font-size: 15px; }
+  .ttable__row > .pri { grid-column: 2; grid-row: 1; justify-self: end; align-self: center; }
+  .ttable__row > .badge { grid-column: 2; grid-row: 2; justify-self: end; align-self: center; }
+}

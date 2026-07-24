@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../auth/AuthContext';
@@ -7,6 +8,7 @@ import { Avatar } from './Avatar';
 import { ThemeToggle } from './ThemeToggle';
 import {
   IconQueue, IconTicket, IconPlus, IconUsers, IconBell, IconLogout, IconChevronDown,
+  IconMenu, IconClose,
 } from './icons';
 import './layout.css';
 
@@ -24,6 +26,10 @@ export function Layout() {
   const { user, logout, hasRole } = useAuth();
   const location = useLocation();
   const isAdmin = hasRole('Admin');
+  const [navOpen, setNavOpen] = useState(false);
+
+  // Close the mobile nav drawer whenever the route changes.
+  useEffect(() => { setNavOpen(false); }, [location.pathname]);
 
   // Live user count for the sidebar badge (admin only; shares cache with the Users page).
   const { data: users } = useQuery({
@@ -38,12 +44,17 @@ export function Layout() {
 
   return (
     <div className="layout">
-      <aside className="sidebar">
+      {navOpen && <div className="nav-backdrop" onClick={() => setNavOpen(false)} />}
+
+      <aside className={`sidebar ${navOpen ? 'sidebar--open' : ''}`}>
         <div className="sidebar__brand">
-          <span className="sidebar__logo">◆</span> Tickety
+          <span><span className="sidebar__logo">◆</span> Tickety</span>
+          <button className="sidebar__close" aria-label="Close menu" onClick={() => setNavOpen(false)}>
+            <IconClose width={18} height={18} />
+          </button>
         </div>
 
-        <nav className="sidebar__nav">
+        <nav className="sidebar__nav" onClick={() => setNavOpen(false)}>
           {hasRole('Agent', 'Admin') && (
             <NavLink to="/queue" className="navitem"><IconQueue /> <span>Queue</span></NavLink>
           )}
@@ -67,9 +78,14 @@ export function Layout() {
 
       <div className="content">
         <header className="topbar">
-          <div className="topbar__titles">
-            <h1 className="topbar__title">{title}</h1>
-            <div className="topbar__crumb">Home <span>›</span> {title}</div>
+          <div className="topbar__left">
+            <button className="topbar__menu" aria-label="Open menu" onClick={() => setNavOpen(true)}>
+              <IconMenu />
+            </button>
+            <div className="topbar__titles">
+              <h1 className="topbar__title">{title}</h1>
+              <div className="topbar__crumb">Home <span>›</span> {title}</div>
+            </div>
           </div>
 
           <div className="topbar__right">

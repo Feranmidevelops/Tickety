@@ -7,11 +7,18 @@
   display: flex; flex-direction: column; padding: var(--space-5) var(--space-4);
 }
 .sidebar__brand {
-  display: flex; align-items: center; gap: var(--space-2);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-2);
   font-size: 17px; font-weight: 700; letter-spacing: -0.01em;
   color: var(--sidebar-fg-strong); padding: 0 var(--space-2) var(--space-6);
 }
 .sidebar__logo { color: #8b93f0; }
+.sidebar__close {
+  display: none; /* only shown inside the mobile drawer */
+  width: 34px; height: 34px; flex-shrink: 0; border: none; background: transparent;
+  cursor: pointer; color: var(--sidebar-fg); border-radius: var(--radius-md);
+  align-items: center; justify-content: center;
+}
+.sidebar__close:hover { background: var(--sidebar-hover); color: var(--sidebar-fg-strong); }
 
 .sidebar__nav { display: flex; flex-direction: column; gap: 3px; flex: 1; }
 .navitem {
@@ -41,10 +48,23 @@
   padding: 0 var(--space-6); background: var(--bg-surface);
   border-bottom: 1px solid var(--border-subtle);
 }
+.topbar__left { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
 .topbar__title { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
 .topbar__crumb { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 .topbar__crumb span { margin: 0 4px; }
 .topbar__right { display: flex; align-items: center; gap: var(--space-2); }
+
+/* Hamburger — desktop hidden, shown on mobile to open the nav drawer. */
+.topbar__menu {
+  display: none; width: 40px; height: 40px; flex-shrink: 0; border: none; cursor: pointer;
+  background: transparent; color: var(--text-secondary); border-radius: var(--radius-md);
+  align-items: center; justify-content: center;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.topbar__menu:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+/* Dimmed overlay behind the open mobile drawer. */
+.nav-backdrop { position: fixed; inset: 0; z-index: 60; background: rgba(12, 16, 34, 0.5); }
 
 .iconbtn {
   width: 36px; height: 36px; border-radius: var(--radius-md); border: none; cursor: pointer;
@@ -85,11 +105,24 @@
 .page--narrow { max-width: 640px; }
 .page--centered { max-width: 1200px; margin: 0 auto; }
 
-@media (max-width: 720px) {
-  .sidebar { width: 64px; padding: var(--space-4) var(--space-2); }
-  .sidebar__brand { justify-content: center; font-size: 0; }
-  .sidebar__logo { font-size: 18px; }
-  .navitem span, .sidebar__foot { display: none; }
-  .navitem { justify-content: center; padding: 0; }
+@media (max-width: 768px) {
+  /* Sidebar becomes an off-canvas drawer, slid in over a backdrop by the hamburger. */
+  .sidebar {
+    position: fixed; left: 0; top: 0; z-index: 70; height: 100%;
+    width: 264px; max-width: 82vw;
+    transform: translateX(-100%);
+    transition: transform var(--dur-slow) var(--ease);
+  }
+  .sidebar--open { transform: translateX(0); box-shadow: var(--shadow-lg); }
+  .sidebar__close { display: inline-flex; }
+
+  .topbar { height: 60px; padding: 0 var(--space-4); }
+  .topbar__menu { display: inline-flex; }
+  .topbar__crumb { display: none; }
+  .topbar__title { font-size: 18px; }
+  .topbar__right { gap: var(--space-1); }
+  .topbar .iconbtn { display: none; }   /* hide the decorative bell to save room */
   .usermenu__name { display: none; }
+
+  .page { padding: var(--space-4); }
 }

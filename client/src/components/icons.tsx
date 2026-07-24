@@ -58,3 +58,9 @@ export const IconEyeOff = (p: SVGProps<SVGSVGElement>) => (
 export const IconTrash = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6M10 11v6M14 11v6"/></svg>
 );
+export const IconMenu = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+);
+export const IconClose = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><path d="M18 6 6 18M6 6l12 12"/></svg>
+);
