@@ -6,6 +6,7 @@ import './styles/global.css';
 import App from './App';
 import { AuthProvider } from './auth/AuthContext';
 import { PresenceProvider } from './realtime/PresenceContext';
+import { NotificationsProvider } from './realtime/NotificationsContext';
 import { ToastProvider } from './components/Toast';
 
 const queryClient = new QueryClient({
@@ -18,7 +19,9 @@ createRoot(document.getElementById('root')!).render(
       <AuthProvider>
         <PresenceProvider>
           <ToastProvider>
-            <App />
+            <NotificationsProvider>
+              <App />
+            </NotificationsProvider>
           </ToastProvider>
         </PresenceProvider>
       </AuthProvider>

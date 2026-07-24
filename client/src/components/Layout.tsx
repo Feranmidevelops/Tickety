@@ -8,9 +8,10 @@ import { Avatar } from './Avatar';
 import { ThemeToggle } from './ThemeToggle';
 import { QueueNotifier } from '../realtime/QueueNotifier';
 import {
-  IconQueue, IconTicket, IconPlus, IconUsers, IconBell, IconLogout, IconChevronDown,
+  IconQueue, IconTicket, IconPlus, IconUsers, IconLogout, IconChevronDown,
   IconMenu, IconClose,
 } from './icons';
+import { NotificationBell } from './NotificationBell';
 import './layout.css';
 
 function pageTitle(pathname: string): string {
@@ -92,7 +93,7 @@ export function Layout() {
 
           <div className="topbar__right">
             <ThemeToggle />
-            <button className="iconbtn" aria-label="Notifications"><IconBell /></button>
+            {hasRole('Agent', 'Admin') && <NotificationBell />}
 
             <details className="usermenu">
               <summary className="usermenu__trigger">

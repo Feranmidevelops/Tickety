@@ -121,7 +121,6 @@
   .topbar__crumb { display: none; }
   .topbar__title { font-size: 18px; }
   .topbar__right { gap: var(--space-1); }
-  .topbar .iconbtn { display: none; }   /* hide the decorative bell to save room */
   .usermenu__name { display: none; }
 
   .page { padding: var(--space-4); }
