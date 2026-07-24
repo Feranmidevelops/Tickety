@@ -1,7 +1,9 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -88,6 +90,30 @@ builder.Services.AddAuthentication(o =>
 
 builder.Services.AddAuthorization();
 
+// —— Rate limiting: throttle login attempts per client IP to blunt brute-force guessing ——
+builder.Services.AddRateLimiter(o =>
+{
+    o.AddPolicy("login", httpContext =>
+    {
+        // Prefer the real client IP behind Render's proxy (X-Forwarded-For), else the socket IP.
+        var ip = httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault()?.Split(',')[0].Trim();
+        if (string.IsNullOrEmpty(ip))
+            ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        return RateLimitPartition.GetFixedWindowLimiter(ip, _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 8,
+            Window = TimeSpan.FromSeconds(30),
+            QueueLimit = 0,
+        });
+    });
+    o.OnRejected = async (ctx, ct) =>
+    {
+        ctx.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        await ctx.HttpContext.Response.WriteAsJsonAsync(
+            new { error = "Too many attempts. Please wait a moment and try again." }, ct);
+    };
+});
+
 // —— CORS for the Vite dev client ——
 var clientUrl = builder.Configuration["ClientUrl"] ?? "http://localhost:5173";
 builder.Services.AddCors(o => o.AddDefaultPolicy(p => p
@@ -117,6 +143,7 @@ if (app.Environment.IsDevelopment())
 await DbSeeder.SeedAsync(app.Services, app.Environment.IsDevelopment());
 
 app.UseCors();
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -125,6 +152,7 @@ app.MapInviteEndpoints();
 app.MapTicketEndpoints();
 app.MapAgentEndpoints();
 app.MapUsersEndpoints();
+app.MapNotificationsEndpoints();
 
 app.MapHub<QueueHub>("/hubs/queue");
 app.MapHub<TicketHub>("/hubs/ticket");

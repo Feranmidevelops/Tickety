@@ -51,8 +51,10 @@ public static class DbSeeder
     {
         // Resolve admin credentials: configured values win; dev falls back to the known defaults;
         // production with nothing configured seeds no admin (so a public deploy has no default login).
-        var adminEmail = config["Seed:AdminEmail"];
-        var adminPassword = config["Seed:AdminPassword"];
+        var configuredEmail = config["Seed:AdminEmail"];
+        var configuredPassword = config["Seed:AdminPassword"];
+        var adminEmail = configuredEmail;
+        var adminPassword = configuredPassword;
         if (string.IsNullOrWhiteSpace(adminEmail) || string.IsNullOrWhiteSpace(adminPassword))
         {
             if (isDevelopment)
@@ -90,6 +92,20 @@ public static class DbSeeder
                 logger.LogError("Failed to seed admin: {Errors}",
                     string.Join(", ", result.Errors.Select(e => e.Description)));
             }
+        }
+
+        // Security: the default admin's credentials are public (they're in the repo). Once a *real*
+        // admin is configured outside Development, remove the default account so it can't be a
+        // backdoor. Guarded on the configured admin actually existing, so we never lock everyone out.
+        if (!isDevelopment
+            && !string.IsNullOrWhiteSpace(configuredEmail)
+            && !configuredEmail.Equals(DefaultAdminEmail, StringComparison.OrdinalIgnoreCase)
+            && await userManager.FindByEmailAsync(configuredEmail) is not null
+            && await userManager.FindByEmailAsync(DefaultAdminEmail) is { } stale)
+        {
+            await userManager.DeleteAsync(stale);
+            logger.LogWarning("Removed the public default admin {Email} (a real admin is configured).",
+                DefaultAdminEmail);
         }
     }
 

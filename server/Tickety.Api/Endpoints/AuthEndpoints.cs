@@ -27,7 +27,20 @@ public static class AuthEndpoints
             var (token, expires) = tokens.Create(user, role);
             return Results.Ok(new AuthResponse(token, expires,
                 new UserDto(user.Id, user.Email!, user.DisplayName, role)));
-        });
+        }).RequireRateLimiting("login");
+
+        // Re-issue a fresh token for a still-valid session, so active users aren't logged out
+        // every time the token's lifetime elapses. Requires the current (unexpired) token.
+        group.MapPost("/refresh", async (
+            ClaimsPrincipal principal, UserManager<ApplicationUser> users, JwtTokenService tokens) =>
+        {
+            var user = await users.GetUserAsync(principal);
+            if (user is null || !user.IsActive) return Results.Unauthorized();
+            var role = principal.FindFirstValue(ClaimTypes.Role) ?? Roles.Requester;
+            var (token, expires) = tokens.Create(user, role);
+            return Results.Ok(new AuthResponse(token, expires,
+                new UserDto(user.Id, user.Email!, user.DisplayName, role)));
+        }).RequireAuthorization();
 
         group.MapGet("/me", async (ClaimsPrincipal principal, UserManager<ApplicationUser> users) =>
         {

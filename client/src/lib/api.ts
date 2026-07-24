@@ -19,6 +19,7 @@ function fallbackMessage(status: number): string {
   if (status === 403) return "You don't have permission to do that.";
   if (status === 404) return "We couldn't find what you were looking for.";
   if (status === 409) return 'That conflicts with something that already exists.';
+  if (status === 429) return 'Too many attempts. Please wait a moment and try again.';
   if (status >= 500) return 'Something went wrong on our end. Please try again in a moment.';
   return `Request failed (${status}).`;
 }
