@@ -14,10 +14,21 @@ export function QueueNotifier() {
   const toast = useToast();
   const { push } = useNotifications();
 
-  // Ask once so we can also notify when the tab is in the background.
+  // Ask for notification permission on the first real interaction (a gesture browsers accept),
+  // rather than nagging the moment the app loads.
   useEffect(() => {
-    if ('Notification' in window && Notification.permission === 'default')
+    if (!('Notification' in window) || Notification.permission !== 'default') return;
+    const ask = () => {
       Notification.requestPermission().catch(() => {});
+      window.removeEventListener('pointerdown', ask);
+      window.removeEventListener('keydown', ask);
+    };
+    window.addEventListener('pointerdown', ask, { once: true });
+    window.addEventListener('keydown', ask, { once: true });
+    return () => {
+      window.removeEventListener('pointerdown', ask);
+      window.removeEventListener('keydown', ask);
+    };
   }, []);
 
   useQueueHub({
@@ -31,8 +42,8 @@ export function QueueNotifier() {
     onAssignedToYou: (t) => {
       playPing('chime');
       toast.show(`🔔 Assigned to you — #${t.id}: ${t.title}`, 'success');
-      push({ kind: 'assigned', message: `Assigned to you — #${t.id}: ${t.title}`, ticketId: t.id });
       qc.invalidateQueries({ queryKey: ['tickets'] });
+      qc.invalidateQueries({ queryKey: ['notifications'] });   // the server persisted it — refresh the bell
       if ('Notification' in window && Notification.permission === 'granted') {
         try {
           new Notification('Ticket assigned to you', { body: `#${t.id}: ${t.title}`, tag: `ticket-${t.id}` });

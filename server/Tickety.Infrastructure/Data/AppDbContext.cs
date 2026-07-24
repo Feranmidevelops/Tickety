@@ -12,6 +12,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Ticket> Tickets => Set<Ticket>();
     public DbSet<TicketEvent> TicketEvents => Set<TicketEvent>();
     public DbSet<Invite> Invites => Set<Invite>();
+    public DbSet<Notification> Notifications => Set<Notification>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -42,6 +43,14 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             e.Property(i => i.Role).HasMaxLength(50).IsRequired();
             e.Property(i => i.Token).HasMaxLength(100).IsRequired();
             e.HasIndex(i => i.Token).IsUnique();
+        });
+
+        builder.Entity<Notification>(e =>
+        {
+            e.Property(n => n.UserId).IsRequired();
+            e.Property(n => n.Kind).HasMaxLength(50).IsRequired();
+            e.Property(n => n.Message).HasMaxLength(500).IsRequired();
+            e.HasIndex(n => new { n.UserId, n.CreatedAtUtc });
         });
     }
 }

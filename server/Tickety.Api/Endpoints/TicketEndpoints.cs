@@ -104,9 +104,20 @@ public static class TicketEndpoints
             ticket.Assign(req.AgentId, actor, DateTime.UtcNow);
             await db.SaveChangesAsync();
 
-            // Ping the assignee — unless they assigned it to themselves.
+            // Notify the assignee — unless they assigned it to themselves. Persist it so it survives
+            // a refresh / offline period, then push it live to any connected sessions.
             if (req.AgentId != actor)
             {
+                db.Notifications.Add(new Notification
+                {
+                    UserId = req.AgentId,
+                    Kind = "assigned",
+                    Message = $"Assigned to you — #{ticket.Id}: {ticket.Title}",
+                    TicketId = ticket.Id,
+                    CreatedAtUtc = DateTime.UtcNow,
+                });
+                await db.SaveChangesAsync();
+
                 var names = await db.NamesForAsync(ticket);
                 await notify.TicketAssignedToAgent(req.AgentId, ticket.ToSummary(names));
             }
