@@ -47,10 +47,22 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
   const data = text ? safeParse(text) : undefined;
 
   if (!res.ok) {
+    if (res.status === 401) handleUnauthorized(path);
     const serverMessage = data && (data.error || (Array.isArray(data.errors) && data.errors.join(', ')));
     throw new ApiError(res.status, serverMessage || fallbackMessage(res.status));
   }
   return data as T;
+}
+
+/** A 401 mid-session means the token has expired (there's no refresh flow). Clear it and bounce
+ *  to a clean login screen, rather than leaving the user stuck on a page that keeps erroring.
+ *  The auth calls (login / me) and the auth pages handle their own 401s, so skip them. */
+function handleUnauthorized(path: string): void {
+  if (path.startsWith('/api/auth/')) return;
+  localStorage.removeItem(TOKEN_KEY);
+  const { pathname } = window.location;
+  if (pathname.startsWith('/login') || pathname.startsWith('/accept-invite')) return;
+  window.location.assign('/login?expired=1');
 }
 
 function safeParse(text: string): any {

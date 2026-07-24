@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { PasswordInput } from '../components/PasswordInput';
 import './auth.css';
@@ -8,6 +8,8 @@ export function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation() as { state?: { from?: { pathname: string } } };
+  const [params] = useSearchParams();
+  const expired = params.get('expired') === '1';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -36,6 +38,9 @@ export function Login() {
         <div className="authcard__brand"><span>◆</span> Tickety</div>
         <div className="authcard__subtitle">Sign in to your support workspace.</div>
 
+        {expired && !error && (
+          <div className="authcard__notice">Your session expired. Please sign in again.</div>
+        )}
         {error && <div className="authcard__error">{error}</div>}
 
         <div className="field">
