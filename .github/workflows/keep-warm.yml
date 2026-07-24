@@ -1,0 +1,18 @@
+# Pings the API's health endpoint so Render's free instance doesn't spin down (it sleeps after
+# ~15 min idle, adding a ~50s cold start to the next request). Runs every 14 minutes.
+#
+# Trade-off: keeping it awake ~24/7 uses most of Render's 750 free instance-hours/month. If that
+# matters, narrow the cron to your active hours (e.g. '*/14 8-22 * * *') or disable this workflow.
+name: Keep API warm
+
+on:
+  schedule:
+    - cron: '*/14 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /health
+        run: curl -fsS --max-time 60 https://tickety-api-n4dh.onrender.com/health || true
