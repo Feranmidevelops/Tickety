@@ -96,16 +96,22 @@ public static class DbSeeder
 
         // Security: the default admin's credentials are public (they're in the repo). Once a *real*
         // admin is configured outside Development, remove the default account so it can't be a
-        // backdoor. Guarded on the configured admin actually existing, so we never lock everyone out.
+        // backdoor. Guarded on a configured account that actually holds the Admin role existing, so
+        // we can never leave the deployment with no admin.
         if (!isDevelopment
             && !string.IsNullOrWhiteSpace(configuredEmail)
-            && !configuredEmail.Equals(DefaultAdminEmail, StringComparison.OrdinalIgnoreCase)
-            && await userManager.FindByEmailAsync(configuredEmail) is not null
-            && await userManager.FindByEmailAsync(DefaultAdminEmail) is { } stale)
+            && !configuredEmail.Equals(DefaultAdminEmail, StringComparison.OrdinalIgnoreCase))
         {
-            await userManager.DeleteAsync(stale);
-            logger.LogWarning("Removed the public default admin {Email} (a real admin is configured).",
-                DefaultAdminEmail);
+            var configuredAdmin = await userManager.FindByEmailAsync(configuredEmail);
+            var stale = await userManager.FindByEmailAsync(DefaultAdminEmail);
+            if (configuredAdmin is not null
+                && await userManager.IsInRoleAsync(configuredAdmin, Roles.Admin)
+                && stale is not null)
+            {
+                await userManager.DeleteAsync(stale);
+                logger.LogWarning("Removed the public default admin {Email} (a real admin is configured).",
+                    DefaultAdminEmail);
+            }
         }
     }
 
