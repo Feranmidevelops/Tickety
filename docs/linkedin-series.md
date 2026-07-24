@@ -216,3 +216,75 @@ The takeaway: "presence" looks like a green dot, but it's really connection-coun
 Built on .NET + SignalR, and it plugged into the same real-time layer I'm already using for live ticket updates.
 
 #buildinpublic #dotnet #signalr #realtime #softwareengineering
+
+---
+---
+
+# Finale — I shipped it 🚀
+
+The capstone post, plus a full recap of everything the build became.
+
+---
+
+## Finale — Tickety is live
+
+A few weeks ago I started building **Tickety** in public: a real-time, invite-only IT support desk — a "mini Zendesk." Today it's **live and deployed**, anyone I invite can use it from their phone, and it cost me **$0** to host. Here's the whole journey — and the one bug that nearly ate my week.
+
+**What it is now**
+• Invite-only auth with three roles — Requester / Agent / Admin (ASP.NET Identity + JWT)
+• A ticket lifecycle that's a real **state machine, enforced on the server** (New → In Progress → Resolved → Closed, plus Reopen)
+• **Real-time everything** over SignalR — the shared queue, per-ticket timelines, and live presence (who's online / away / offline)
+• An admin console — invite people, see their role + presence, remove them
+• **Live notifications** — a chime when a ticket is assigned to you, a softer blip for new ones, and an unread bell in the top bar
+• Real invite emails, a polished light/dark UI, and a fully **responsive mobile** layout
+
+**The stack**
+React + TypeScript (Vite) on the front · ASP.NET Core (.NET 10) + SignalR on the back · PostgreSQL on Supabase · deployed on Render (API) + Vercel (web) — all free tiers, no credit card.
+
+**The bug that ate a week**
+I wired invite emails with Gmail SMTP. Flawless on my machine. Deployed it… and every send hung for *exactly* 120 seconds, then failed silently.
+
+The cause wasn't my code: **Render's free tier blocks all outbound SMTP ports** (25/465/587) to fight spam. The packets were simply dropped — which is why it *timed out* instead of erroring fast.
+
+The lesson: **don't fight your host's network — go over the top of it.** I swapped SMTP for **Brevo's transactional HTTP API**, which sends over plain HTTPS (port 443, never blocked). Because I'd already hidden email behind an `IEmailSender` interface, it was a new class + a config switch, not a rewrite. First test after: `emailed: true` in 2 seconds. 🎉
+
+**What building this actually taught me**
+→ Put the rules in the **domain, not the UI**. The server is the guardrail, always.
+→ When the same data travels two transports (REST + WebSocket), make them **serialize identically** — or spend an afternoon debugging ghosts.
+→ Design with **constraints**: few colors, borders over shadows, a real type scale. Restraint reads as intent.
+→ Choose your database *and* your email transport around **where you'll host**, not just what you know.
+→ Make third-party dependencies **non-fatal**. A flaky mail server should never break creating an invite.
+
+Tickety started as "can I nail the real-time bit?" and became a full, shipped product I'm proud of. Next on the roadmap: SLA timers and analytics.
+
+Want to poke at it? DM me for an invite. 🎟️
+
+#buildinpublic #dotnet #react #signalr #softwareengineering
+
+---
+
+## The full build, start to finish (recap)
+
+**Phase 1 — the spine**
+- Invite-only auth, RBAC (Requester / Agent / Admin), JWT bearer
+- Ticket lifecycle as a server-enforced state machine, unit-tested across every transition
+- Audit trail (`TicketEvent`) powering the activity timeline
+- Real-time foundation: SignalR queue channel + per-ticket channel
+
+**Round 2 — production polish**
+- Migrated the database SQL Server → PostgreSQL (Supabase), a near one-file change thanks to EF Core
+- Real invite emails, best-effort behind an `IEmailSender` abstraction
+- Full UI redesign — navy sidebar, stat cards, avatars, pastel pills, light/dark tokens
+- Real-time presence — online/away/offline, multi-tab-safe via connection counting + client idle detection
+
+**Round 3 — ship it & refine**
+- Deployed for free: Render (Dockerized API, health check, PORT binding) + Vercel (SPA)
+- Clearer error messages, a password reveal toggle, strong password rules with a live green checklist
+- Admin: delete users; a seeded demo workspace (20 realistic tickets + 8 demo users)
+- Graceful session-expiry handling (clean redirect to login instead of a stuck screen)
+- Pivoted email SMTP → Brevo HTTP API after discovering Render blocks SMTP
+- Mobile pass: a slide-in nav drawer and card-reflow tables
+- Notifications: targeted assignment chime, new-ticket blip, and a top-bar unread bell / notification center
+
+**Final stack**
+React + TypeScript (Vite), TanStack Query, SignalR client · ASP.NET Core (.NET 10) minimal APIs + SignalR · EF Core · ASP.NET Identity + JWT · PostgreSQL (Supabase) · Brevo (email) · Render + Vercel (hosting).
