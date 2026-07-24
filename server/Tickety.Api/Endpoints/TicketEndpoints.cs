@@ -100,8 +100,16 @@ public static class TicketEndpoints
             if (!await db.Users.AnyAsync(u => u.Id == req.AgentId))
                 return Results.BadRequest(new { error = "Unknown agent." });
 
-            ticket.Assign(req.AgentId, principal.Uid(), DateTime.UtcNow);
+            var actor = principal.Uid();
+            ticket.Assign(req.AgentId, actor, DateTime.UtcNow);
             await db.SaveChangesAsync();
+
+            // Ping the assignee — unless they assigned it to themselves.
+            if (req.AgentId != actor)
+            {
+                var names = await db.NamesForAsync(ticket);
+                await notify.TicketAssignedToAgent(req.AgentId, ticket.ToSummary(names));
+            }
             return await BroadcastAndReturn(ticket, db, notify);
         }).RequireAuthorization(p => p.RequireRole(Roles.Agent, Roles.Admin));
 

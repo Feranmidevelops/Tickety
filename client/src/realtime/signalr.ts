@@ -17,6 +17,7 @@ function build(hub: string): HubConnection {
 export function useQueueHub(handlers: {
   onCreated?: (t: TicketSummary) => void;
   onUpdated?: (t: TicketSummary) => void;
+  onAssignedToYou?: (t: TicketSummary) => void;
 }) {
   const ref = useRef(handlers);
   ref.current = handlers;
@@ -25,6 +26,7 @@ export function useQueueHub(handlers: {
     const conn = build('queue');
     conn.on('TicketCreated', (t: TicketSummary) => ref.current.onCreated?.(t));
     conn.on('QueueUpdated', (t: TicketSummary) => ref.current.onUpdated?.(t));
+    conn.on('AssignedToYou', (t: TicketSummary) => ref.current.onAssignedToYou?.(t));
 
     // Guard against React StrictMode's mount→unmount→mount: the cleanup awaits the
     // start promise before stopping, so we never abort a connection mid-negotiation.

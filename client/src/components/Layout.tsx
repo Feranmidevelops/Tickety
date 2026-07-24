@@ -6,6 +6,7 @@ import { api } from '../lib/api';
 import type { UserRow } from '../lib/types';
 import { Avatar } from './Avatar';
 import { ThemeToggle } from './ThemeToggle';
+import { QueueNotifier } from '../realtime/QueueNotifier';
 import {
   IconQueue, IconTicket, IconPlus, IconUsers, IconBell, IconLogout, IconChevronDown,
   IconMenu, IconClose,
@@ -44,6 +45,7 @@ export function Layout() {
 
   return (
     <div className="layout">
+      {hasRole('Agent', 'Admin') && <QueueNotifier />}
       {navOpen && <div className="nav-backdrop" onClick={() => setNavOpen(false)} />}
 
       <aside className={`sidebar ${navOpen ? 'sidebar--open' : ''}`}>

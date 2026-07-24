@@ -1,9 +1,7 @@
 import { useMemo, useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import { useAuth } from '../auth/AuthContext';
-import { useToast } from '../components/Toast';
-import { useQueueHub } from '../realtime/signalr';
 import { TicketTable } from '../components/TicketTable';
 import { StatCard, StatRow } from '../components/StatCard';
 import { IconTicket, IconQueue, IconCheck, IconArchive } from '../components/icons';
@@ -13,22 +11,13 @@ type Filter = 'all' | 'unassigned' | 'mine';
 
 export function Queue() {
   const { user } = useAuth();
-  const qc = useQueryClient();
-  const toast = useToast();
   const [filter, setFilter] = useState<Filter>('all');
 
+  // Kept live by the app-wide QueueNotifier (mounted in Layout for agents/admins),
+  // which invalidates ['tickets'] on any queue change.
   const { data: tickets = [], isLoading } = useQuery({
     queryKey: ['tickets'],
     queryFn: () => api.get<TicketSummary[]>('/api/tickets'),
-  });
-
-  // Live queue: new tickets toast + refresh; updates just refresh.
-  useQueueHub({
-    onCreated: (t) => {
-      toast.show(`New ticket #${t.id}: ${t.title}`, 'info');
-      qc.invalidateQueries({ queryKey: ['tickets'] });
-    },
-    onUpdated: () => qc.invalidateQueries({ queryKey: ['tickets'] }),
   });
 
   const filtered = useMemo(() => {
